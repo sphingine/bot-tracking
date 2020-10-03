@@ -1,5 +1,6 @@
 package com.marlabs.service.impl;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -24,7 +25,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	
 	
 	@Transactional
-	public String getAuthenticationQuery(String jwtToken) {
+	public String getAuthenticationQuery(String jwtToken) throws NoSuchAlgorithmException {
 		String query = queryUtils.getQuery();
 		AuthenticationModel authModel = new AuthenticationModel(jwtToken, query, queryUtils.getSum(query));
 		authenticationDAO.saveOrUpdate(authModel);
@@ -37,10 +38,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		boolean isValid = false;
 		List<AuthenticationModel> models = authenticationDAO.getAuthenticationModel(jwtToken);
 		
-		if (null != models && models.size() > 0) {
+		if (null != models 
+				&& !models.isEmpty()) {
 			int correctResult = models.get(0).getSum();
 			String correctQuery = models.get(0).getQuery();
-					
+			
 			if (correctResult == sum && correctQuery.equalsIgnoreCase(query)) {
 				isValid = true;
 			}

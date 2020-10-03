@@ -42,12 +42,12 @@ public class AuthenticationModel {
 		this.result = result;
 	}
 
-	public String getJwt_token() {
+	public String getJwtToken() {
 		return jwtToken;
 	}
 
-	public void setJwt_token(String jwt_token) {
-		this.jwtToken = jwt_token;
+	public void setJwtToken(String jwtToken) {
+		this.jwtToken = jwtToken;
 	}
 
 	public String getQuery() {

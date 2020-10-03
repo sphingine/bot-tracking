@@ -7,8 +7,5 @@ import com.marlabs.model.AuthenticationModel;
 
 @Repository
 public class AuthenticationDAOImpl extends GenericDAOImpl<AuthenticationModel> implements AuthenticationDAO {
-
-	public AuthenticationDAOImpl(){
-		setClazz(AuthenticationModel.class );
-	}
+	
 }

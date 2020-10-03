@@ -1,6 +1,7 @@
 package com.marlabs.controller;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,27 +58,25 @@ public class AuthenticationController {
 			Cookie cookie = new Cookie("jwt", jwtToken);
 			cookie.setMaxAge(60);
 			cookie.setSecure(true);
+			cookie.setHttpOnly(true);
 			httpResponse.addCookie(cookie);
 
 			//Creating the Json Request body
-			Map<String, String> responseBody = new HashMap<String, String>();
+			Map<String, String> responseBody = new HashMap<>();
 			responseBody.put("query", query);
 			ObjectMapper objectMapper = new ObjectMapper();
 			String response = objectMapper.writeValueAsString(responseBody);
 
-			httpResponse.setContentType("application/json");
+			httpResponse.setContentType("application/json;charset=UTF-8");
 			httpResponse.getWriter().write(response);
 
-		} catch (IOException e) {
-			httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			LOGGER.error(e.getMessage());
-		} catch (JSONException e) {
-			httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		} catch (IOException|JSONException|NoSuchAlgorithmException e) {
+			httpResponse.setStatus(HttpStatus.CONFLICT.value());
 			LOGGER.error(e.getMessage());
 		} catch (Exception e) {
 			httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			LOGGER.error(e.getMessage());
-		};
+		}
 	}
 
 
@@ -92,7 +91,6 @@ public class AuthenticationController {
 	public void postAuthentication(HttpServletRequest httpRequest, 
 			HttpServletResponse httpResponse,
 			@CookieValue(value="jwt") String jwt) {
-		LOGGER.debug("jwt Token :" + jwt);
 
 		try {
 			String  requestBody = httpRequest.getReader().lines().collect(
@@ -104,15 +102,15 @@ public class AuthenticationController {
 			String query = json.getString("query");
 			int sum = Integer.parseInt(json.getString("sum"));
 
-
 			if (! jwt.equalsIgnoreCase(cookieUtil.generteJWTtoken(username, password))) {
 				httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
 			} else { 
 				boolean isValid = authenticationService.validateAuthenticationQuery(jwt, query, sum);
-
+				
 				Cookie cookie = new Cookie("jwt", null);
 				cookie.setMaxAge(0);
 				cookie.setSecure(true);
+				cookie.setHttpOnly(true);
 				httpResponse.addCookie(cookie);
 				httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());		
 
@@ -120,13 +118,10 @@ public class AuthenticationController {
 					httpResponse.setStatus(HttpStatus.OK.value());
 				} 
 			}
-		} catch (IOException e) {
-			httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		} catch (IOException|JSONException e) {
+			httpResponse.setStatus(HttpStatus.CONFLICT.value());
 			LOGGER.error(e.getMessage());
-		} catch (JSONException e) {
-			httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			LOGGER.error(e.getMessage());
-		} catch (Exception e) {
+		}  catch (Exception e) {
 			httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			LOGGER.error(e.getMessage());
 		}

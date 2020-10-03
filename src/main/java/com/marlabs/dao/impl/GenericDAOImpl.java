@@ -15,36 +15,18 @@ import com.marlabs.model.AuthenticationModel;
 @Repository
 public class GenericDAOImpl<T> {
 
-	private Class< T > clazz;
-
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	public void setClazz(Class<T> clazzToSet) {
-		clazz = clazzToSet;
-	}
-
 	protected final Session getCurrentSession(){
 		return sessionFactory.getCurrentSession();
-	}
-
-	public T update(T entity) {
-		return (T) getCurrentSession().merge(entity);
-	}
-
-	public void save(T entity) {
-		getCurrentSession().persist( entity );
 	}
 	
 	public void saveOrUpdate(T entity) {
 		getCurrentSession().saveOrUpdate( entity );
 	}
-
-	public T findOne(long id) {
-		return (T) getCurrentSession().get(clazz, id);
-	}
 	
-	public List getAuthenticationModel(String jwtToken) {
+	public List<AuthenticationModel> getAuthenticationModel(String jwtToken) {
 		Criteria criteria =  getCurrentSession().createCriteria(AuthenticationModel.class);
 		criteria.add(Restrictions.eq("jwtToken", jwtToken));
 		return criteria.list();

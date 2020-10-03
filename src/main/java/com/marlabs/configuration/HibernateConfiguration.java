@@ -16,28 +16,28 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class HibernateConfiguration {
 	@Value("${spring.datasource.driverClassName}")
-	private String DRIVER;
+	private String driver;
  
 	@Value("${spring.datasource.password}")
-	private String PASSWORD;
+	private String password;
  
 	@Value("${spring.datasource.url}")
-	private String URL;
+	private String jdbcUrl;
  
 	@Value("${spring.datasource.username}")
-	private String USERNAME;
+	private String dbUsername;
  
 	@Value("${scan.packages}")
-	private String PACKAGES_TO_SCAN;
+	private String packagesToScan;
 
 			
 	@Bean
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(DRIVER);
-		dataSource.setUrl(URL);
-		dataSource.setUsername(USERNAME);
-		dataSource.setPassword(PASSWORD);
+		dataSource.setDriverClassName(driver);
+		dataSource.setUrl(jdbcUrl);
+		dataSource.setUsername(dbUsername);
+		dataSource.setPassword(password);
 		return dataSource;
 	}
  
@@ -45,7 +45,7 @@ public class HibernateConfiguration {
 	public LocalSessionFactoryBean sessionFactory() {
 		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
 		sessionFactory.setDataSource(dataSource());
-		sessionFactory.setPackagesToScan(PACKAGES_TO_SCAN);
+		sessionFactory.setPackagesToScan(packagesToScan);
 		Properties hibernateProperties = new Properties();
 		hibernateProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
 		hibernateProperties.put("hibernate.show_sql", true);
