@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marlabs.configuration.ContextLoadTest;
 import com.marlabs.constants.Constants;
 import com.marlabs.service.impl.AuthenticationServiceImpl;
-import com.marlabs.util.QueryUtils;
 
 public class AuthenticationControllerTest extends ContextLoadTest {
 

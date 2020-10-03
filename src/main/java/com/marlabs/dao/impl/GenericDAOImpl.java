@@ -2,10 +2,13 @@ package com.marlabs.dao.impl;
 
 import java.util.List;
 
-import org.hibernate.Criteria;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -27,8 +30,12 @@ public class GenericDAOImpl<T> {
 	}
 	
 	public List<AuthenticationModel> getAuthenticationModel(String jwtToken) {
-		Criteria criteria =  getCurrentSession().createCriteria(AuthenticationModel.class);
-		criteria.add(Restrictions.eq("jwtToken", jwtToken));
-		return criteria.list();
+		CriteriaBuilder builder = getCurrentSession().getCriteriaBuilder();
+		CriteriaQuery<AuthenticationModel> query = builder.createQuery(AuthenticationModel.class);
+		Root<AuthenticationModel> root = query.from(AuthenticationModel.class);
+        query.select(root).where(builder.equal(root.get("jwtToken"), jwtToken));
+  
+        Query<AuthenticationModel> q = getCurrentSession().createQuery(query);
+        return q.getResultList();
 	}
 }
